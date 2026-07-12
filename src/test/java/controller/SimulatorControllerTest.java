@@ -47,7 +47,7 @@ class SimulatorControllerTest {
         ByteArrayOutputStream captured = new ByteArrayOutputStream();
         PrintStream output = new PrintStream(captured, true, StandardCharsets.UTF_8);
 
-        ConsoleView view = new ConsoleView(input, output);
+        ConsoleView view = new ConsoleView(input, output, false);
         SimulatorController.createDefault(view, CLOCK_2026).run();
 
         return new String(captured.toByteArray(), StandardCharsets.UTF_8);

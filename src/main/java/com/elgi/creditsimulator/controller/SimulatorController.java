@@ -12,6 +12,7 @@ import com.elgi.creditsimulator.view.InstallmentPlanFormatter;
 import java.time.Clock;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public class SimulatorController {
 
@@ -83,6 +84,10 @@ public class SimulatorController {
             view.printError(failure);
             return CommandOutcome.CONTINUE;
         }
+    }
+
+    public Set<String> commandNames() {
+        return registry.names();
     }
 
 }

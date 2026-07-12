@@ -1,0 +1,6 @@
+Mobil           # Jenis Kendaraan  (Motor | Mobil)
+Bekas           # Kondisi          (Baru | Bekas)
+2020            # Tahun Kendaraan  (4 digit)
+100000000       # Jumlah Pinjaman Total
+3               # Tenor Pinjaman   (1-6 tahun)
+25000000        # Jumlah DP
