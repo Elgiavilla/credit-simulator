@@ -1,12 +1,10 @@
 package com.elgi.creditsimulator.controller;
 
-import com.elgi.creditsimulator.controller.command.ExitCommand;
-import com.elgi.creditsimulator.controller.command.LoadCommand;
-import com.elgi.creditsimulator.controller.command.ShowCommand;
-import com.elgi.creditsimulator.controller.command.SimulateCommand;
+import com.elgi.creditsimulator.controller.command.*;
 import com.elgi.creditsimulator.exception.CreditSimulatorException;
 import com.elgi.creditsimulator.remote.LoanApiClient;
 import com.elgi.creditsimulator.service.InstallmentCalculator;
+import com.elgi.creditsimulator.session.SheetManager;
 import com.elgi.creditsimulator.validation.LoanValidator;
 import com.elgi.creditsimulator.view.ConsoleView;
 import com.elgi.creditsimulator.view.InstallmentPlanFormatter;
@@ -38,6 +36,7 @@ public class SimulatorController {
         InstallmentCalculator calculator = new InstallmentCalculator();
         InstallmentPlanFormatter formatter = new InstallmentPlanFormatter();
 
+        SheetManager sheets = new SheetManager();
         SimulateCommand simulate =
                 new SimulateCommand(view, reader, validator, calculator, formatter);
         LoanApiClient apiClient = LoanApiClient.createDefault();
@@ -45,6 +44,9 @@ public class SimulatorController {
         CommandRegistry registry = new CommandRegistry();
         registry.register(simulate);
         registry.register(new LoadCommand(view, apiClient, simulate));
+        registry.register(new SaveCommand(view, sheets));          // <- three lines
+        registry.register(new SwitchCommand(view, sheets, formatter));
+        registry.register(new SheetsCommand(view, sheets));
         registry.register(new ShowCommand(registry, view));
         registry.register(new ExitCommand(view));
 

@@ -7,6 +7,7 @@ import com.elgi.creditsimulator.exception.CreditSimulatorException;
 import com.elgi.creditsimulator.model.InstallmentPlan;
 import com.elgi.creditsimulator.model.LoanRequest;
 import com.elgi.creditsimulator.service.InstallmentCalculator;
+import com.elgi.creditsimulator.session.SheetManager;
 import com.elgi.creditsimulator.validation.LoanValidator;
 import com.elgi.creditsimulator.view.ConsoleView;
 import com.elgi.creditsimulator.view.InstallmentPlanFormatter;
@@ -65,9 +66,9 @@ public class SimulateCommand implements Command {
     
     public void simulate(LoanRequest request) {
         validator.validate(request);
-
+        SheetManager sheets = new SheetManager();
         InstallmentPlan plan = calculator.calculate(request);
-
+        sheets.setCurrent(plan);
         view.printBlankLine();
         view.print(formatter.format(plan));
     }
