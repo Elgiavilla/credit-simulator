@@ -1,9 +1,11 @@
 package com.elgi.creditsimulator.controller;
 
 import com.elgi.creditsimulator.controller.command.ExitCommand;
+import com.elgi.creditsimulator.controller.command.LoadCommand;
 import com.elgi.creditsimulator.controller.command.ShowCommand;
 import com.elgi.creditsimulator.controller.command.SimulateCommand;
 import com.elgi.creditsimulator.exception.CreditSimulatorException;
+import com.elgi.creditsimulator.remote.LoanApiClient;
 import com.elgi.creditsimulator.service.InstallmentCalculator;
 import com.elgi.creditsimulator.validation.LoanValidator;
 import com.elgi.creditsimulator.view.ConsoleView;
@@ -36,10 +38,13 @@ public class SimulatorController {
         InstallmentCalculator calculator = new InstallmentCalculator();
         InstallmentPlanFormatter formatter = new InstallmentPlanFormatter();
 
+        SimulateCommand simulate =
+                new SimulateCommand(view, reader, validator, calculator, formatter);
+        LoanApiClient apiClient = LoanApiClient.createDefault();
+
         CommandRegistry registry = new CommandRegistry();
-        registry.register(new SimulateCommand(view, reader, validator, calculator, formatter));
-        // 'load' arrives in M6, 'save' and 'switch' in M7. Each is one line here and the
-        // 'show' menu picks them up for free.
+        registry.register(simulate);
+        registry.register(new LoadCommand(view, apiClient, simulate));
         registry.register(new ShowCommand(registry, view));
         registry.register(new ExitCommand(view));
 
