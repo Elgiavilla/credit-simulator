@@ -1,17 +1,22 @@
 package com.elgi.creditsimulator;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+import com.elgi.creditsimulator.controller.SimulatorController;
+import com.elgi.creditsimulator.view.ConsoleView;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+import java.time.Clock;
+
+public class Main {
+    private Main() {
+        throw new AssertionError("Main is an entry point and must not be instantiated");
+    }
+
+    public static void main(String[] args) {
+        ConsoleView view = ConsoleView.onSystemStreams();
+
+        if (args.length > 0) {
+            view.print("File input is not wired up yet (arriving in M5). Starting interactive mode.");
         }
+
+        SimulatorController.createDefault(view, Clock.systemDefaultZone()).run();
     }
 }

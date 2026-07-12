@@ -38,9 +38,13 @@ public abstract class Vehicle {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof Vehicle vehicle)) {
+
+        if (!(other instanceof Vehicle)) {
             return false;
         }
+
+        Vehicle vehicle = (Vehicle) other;
+
         return year == vehicle.year
                 && condition == vehicle.condition
                 && type() == vehicle.type();

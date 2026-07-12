@@ -1,6 +1,7 @@
 package com.elgi.creditsimulator.validation;
 
 import com.elgi.creditsimulator.model.LoanRequest;
+import com.elgi.creditsimulator.utils.MoneyFormat;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -19,8 +20,8 @@ public final class LoanAmountRule implements ValidationRule {
         }
         if (amount.compareTo(MAXIMUM) > 0) {
             return Optional.of(String.format(
-                    "Total loan amount must not exceed Rp %s (1 billion), but was Rp %s.",
-                    MAXIMUM.toPlainString(), amount.toPlainString()));
+                    "Total loan amount must not exceed %s (1 billion), but was %s.",
+                    MoneyFormat.rupiah(MAXIMUM), MoneyFormat.rupiah(amount)));
         }
         return Optional.empty();
     }

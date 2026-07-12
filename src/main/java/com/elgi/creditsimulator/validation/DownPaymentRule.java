@@ -2,6 +2,7 @@ package com.elgi.creditsimulator.validation;
 
 import com.elgi.creditsimulator.model.LoanRequest;
 import com.elgi.creditsimulator.model.Vehicle;
+import com.elgi.creditsimulator.utils.MoneyFormat;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -48,11 +49,7 @@ public final class DownPaymentRule implements ValidationRule {
         return Optional.empty();
     }
 
-    /** {@code 0.35} -> {@code "35"}, {@code 0.3} -> {@code "30"}. */
     private String asPercent(BigDecimal ratio) {
-        return ratio.multiply(ONE_HUNDRED)
-                .setScale(2, RoundingMode.HALF_UP)
-                .stripTrailingZeros()
-                .toPlainString();
+        return MoneyFormat.percent(ratio.multiply(ONE_HUNDRED).setScale(2, RoundingMode.DOWN));
     }
 }
