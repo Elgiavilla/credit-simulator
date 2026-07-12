@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do                       # follow symlinks
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ "$SOURCE" != /* ]] && SOURCE="$DIR/$SOURCE" # relative link -> make absolute
+done
+PROJECT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+
+JAR="$PROJECT_DIR/target/credit-simulator.jar"
+
+die() {
+  echo "credit_simulator: $*" >&2
+  exit 1
+}
+
+if [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+  JAVA="$JAVA_HOME/bin/java"
+elif command -v java >/dev/null 2>&1; then
+  JAVA="java"
+else
+  die "no Java found. Install a JDK 11 or newer, or set JAVA_HOME."
+fi
+
+# 'java -version' writes to stderr; the awk pulls "11" out of "11.0.21" or "1.8.0_382".
+JAVA_MAJOR="$("$JAVA" -version 2>&1 | head -1 | awk -F '"' '{print $2}' | awk -F. '{if ($1 == 1) print $2; else print $1}')"
+if [ -n "$JAVA_MAJOR" ] && [ "$JAVA_MAJOR" -lt 11 ] 2>/dev/null; then
+  die "Java 11 or newer is required, but found Java $JAVA_MAJOR."
+fi
+
+# -- the jar ------------------------------------------------------------------
+# Build on demand, so a fresh clone runs with one command and no instructions.
+if [ ! -f "$JAR" ]; then
+  echo "credit_simulator: no build found, building now ..." >&2
+
+  if [ -x "$PROJECT_DIR/mvnw" ]; then
+    MAVEN="$PROJECT_DIR/mvnw"
+  elif command -v mvn >/dev/null 2>&1; then
+    MAVEN="mvn"
+  else
+    die "no build found at target/credit-simulator.jar, and Maven is not installed.
+    Install Maven and run 'mvn clean package', or use the Docker image:
+      docker run -it --rm elgi/credit-simulator"
+  fi
+
+  ( cd "$PROJECT_DIR" && "$MAVEN" -q clean package ) \
+    || die "the build failed. Run 'mvn clean package' to see why."
+
+  [ -f "$JAR" ] || die "the build finished but produced no jar at $JAR."
+fi
+
+exec "$JAVA" -jar "$JAR" "$@"
